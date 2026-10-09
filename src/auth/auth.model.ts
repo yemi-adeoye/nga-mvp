@@ -43,10 +43,27 @@ export type Profile = {
 
 }
 
+export type Session = {
+    userId: number,
+    accessTokenExpireAt: Date,
+    refreshTokenExpireAt: Date,
+    revokedAt: Date | null,
+    ipAddress: string,
+    userAgent: string,
+    refreshTokenHash: string,
+    createdAt: Date
+}
+
 export type EmailMessage = {
     to: string;
     from: string;
     subject: string;
     text: string;
     html?: string;
+}
+
+export interface AuthenticatedUser {
+    username: string,
+    id: number,
+    status: UserStatus
 }

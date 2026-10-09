@@ -8,7 +8,7 @@ export const profileTable = mysqlTable("profiles", {
     firstName: varchar({ length: 100 }).notNull(),
     lastName: varchar({ length: 100 }).notNull(),
     displayName: varchar({ length: 50 }).notNull(),
-    dateOfBirth: date().notNull(),
+    dateOfBirth: date({ mode: 'string' }).notNull(),
     countryCode: varchar({ length: 2 }).default(""),
     favoriteClub: varchar({ length: 100 }).default(""),
     bio: text().default(""),

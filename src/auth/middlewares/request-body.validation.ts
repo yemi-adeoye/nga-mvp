@@ -1,8 +1,8 @@
 import { NextFunction, type Request, type Response } from "express"
 import z from "zod"
-export const validate = (schema: z.ZodType) => {
+export const validateRequestBody = (schema: z.ZodType) => {
     return (req: Request, res: Response, next: NextFunction) => {
-
+        console.log(req.files)
         const result = schema.safeParse(req.body)
 
         if (!result.success) {

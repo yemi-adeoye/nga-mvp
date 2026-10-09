@@ -12,6 +12,7 @@ import { IUserRepository } from "../../repositories/iuser.repository.js";
 import { IEmailService } from "../../services/iemail.service.js";
 import { IPasswordHasher } from "../../services/ipassword-hasher.service.js";
 import { ITokenGenerator } from "../../services/itoken-generator.service.js";
+import { ITokenHasher } from "../../services/itoken-hasher.service.js";
 import { RegisterRequest } from "../../validation/register.schema.js";
 import { IRegisterUseCase } from "../iregisterUseCase.js";
 
@@ -20,6 +21,7 @@ export class RegisterUseCase implements IRegisterUseCase {
         private readonly users: IUserRepository,
         private readonly passwordHasher: IPasswordHasher,
         private readonly tokenGenerator: ITokenGenerator,
+        private readonly tokenHasher: ITokenHasher,
         private readonly emailService: IEmailService,
         private readonly unitOfWork: IUnitOfWork
     ) { }
@@ -56,7 +58,7 @@ export class RegisterUseCase implements IRegisterUseCase {
 
     }
 
-    private async validateBusinessRequirements(email: string, phone: string | undefined, username: string, dateOfBirth: Date): Promise<void> {
+    private async validateBusinessRequirements(email: string, phone: string | undefined, username: string, dateOfBirth: string): Promise<void> {
         // ensure email and username are not taken
         if (!await this.ensureEmailIsAvailable(email)) {
             throw new EmailAlreadyExistsException(email)
@@ -72,7 +74,7 @@ export class RegisterUseCase implements IRegisterUseCase {
 
         // ensure user is old enough
         if (!this.userIsOldEnough(dateOfBirth)) {
-            throw new UserIsNotOldEnoughException(dateOfBirth.toISOString())
+            throw new UserIsNotOldEnoughException(dateOfBirth)
         }
     }
 
@@ -94,16 +96,17 @@ export class RegisterUseCase implements IRegisterUseCase {
         return !phoneExists;
     }
 
-    private userIsOldEnough(dateOfBirth: Date): boolean {
+    private userIsOldEnough(dateOfBirth: string): boolean {
         const today = new Date();
+        const dobDate = new Date(dateOfBirth);
 
-        let age = today.getFullYear() - dateOfBirth.getFullYear();
+        let age = today.getFullYear() - new Date(dateOfBirth).getFullYear();
 
         const hasHadBirthdayThisYear =
-            today.getMonth() > dateOfBirth.getMonth() ||
+            today.getMonth() > dobDate.getMonth() ||
             (
-                today.getMonth() === dateOfBirth.getMonth() &&
-                today.getDate() >= dateOfBirth.getDate()
+                today.getMonth() === dobDate.getMonth() &&
+                today.getDate() >= dobDate.getDate()
             );
 
         if (!hasHadBirthdayThisYear) {
@@ -142,7 +145,7 @@ export class RegisterUseCase implements IRegisterUseCase {
 
         const rawToken = this.tokenGenerator.generate();
 
-        const tokenHash = this.tokenGenerator.hash(rawToken);
+        const tokenHash = this.tokenHasher.hash(rawToken);
 
         const expiresAt = new Date(
             Date.now() + 24 * 60 * 60 * 1000
@@ -170,9 +173,9 @@ export class RegisterUseCase implements IRegisterUseCase {
             html: `Hello ${registerRequest.username}, <br> Welcome to </b>naijagistsoccer</b>
             <p>Please click on the link below to register your email</p>
 
-            <a href="localhost:9000/auth/verify?token=${rawToken}">Verify Email</a>"
+            <a href="http://localhost:9000/auth/verify?token=${rawToken}">Verify Email</a>
 
-            <b>NaijaGistSoccer</b>
+            <p>NaijaGistSoccer</p>
             `
 
         }

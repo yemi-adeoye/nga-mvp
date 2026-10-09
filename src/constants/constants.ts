@@ -25,3 +25,7 @@ export type UserRole = typeof USER_ROLES[number]
 export const NGS_NO_REPLY_EMAIL = "noreply@naijagistsoccer.com"
 
 export const MIN_USER_AGE = 13
+
+export const ISSUER = "NGS"
+
+export const ACCESS_TOKEN_TTL_SECONDS = '15m'

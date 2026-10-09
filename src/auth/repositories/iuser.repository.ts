@@ -17,4 +17,8 @@ export interface IUserRepository {
     emailExists(email: string): Promise<boolean>
 
     update(user: User): Promise<void>;
+
+    setActive(userId: number): Promise<void>
+
+    verifyEmail(userId: number): Promise<void>
 }

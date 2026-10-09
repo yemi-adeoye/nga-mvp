@@ -3,6 +3,7 @@ import { Database, Transaction } from "../../../db/index.js";
 import { NewUser, UserRow, userTable } from "../../../db/schema/auth/schema.users.js";
 import { IUserRepository } from "../iuser.repository.js";
 import { User } from "../../auth.model.js";
+import { ACTIVE } from "../../../constants/constants.js";
 
 export class DrizzleUserRepository implements IUserRepository {
 
@@ -10,6 +11,20 @@ export class DrizzleUserRepository implements IUserRepository {
 
     update(user: Partial<User>): Promise<void> {
         throw new Error("Method not implemented.");
+    }
+
+    async setActive(userId: number): Promise<void> {
+        await this.db
+            .update(userTable)
+            .set({ status: ACTIVE })
+            .where(eq(userTable.id, userId))
+    }
+
+    async verifyEmail(userId: number): Promise<void> {
+        await this.db
+            .update(userTable)
+            .set({ status: ACTIVE, emailVerified: true })
+            .where(eq(userTable.id, userId))
     }
 
     async create(user: User): Promise<number> {
