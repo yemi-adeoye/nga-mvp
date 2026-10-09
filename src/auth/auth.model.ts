@@ -66,4 +66,5 @@ export interface AuthenticatedUser {
     username: string,
     id: number,
     status: UserStatus
+    role: UserRole
 }

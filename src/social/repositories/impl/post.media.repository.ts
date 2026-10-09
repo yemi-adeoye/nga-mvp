@@ -7,6 +7,14 @@ export class DrizzleMediaPostRepository implements IMediaPostRepository {
         private readonly db: Database | Transaction
     ) { }
 
+    async createMany(mediaPostIds: NewMediaPost[]): Promise<void> {
+        await this.db
+            .insert(mediaPostTable)
+            .values(mediaPostIds)
+            .$returningId();
+
+    }
+
 
     async create(postMedia: NewMediaPost): Promise<void> {
         await this.db

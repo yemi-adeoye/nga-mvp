@@ -1,8 +1,8 @@
 import { type Request, type Response, NextFunction } from "express";
-import { INewPostUseCase } from "./usecases/inewPostUseCase.js";
-import { AuthenticatedUser } from "../auth/auth.model.js";
+import { AuthenticatedUser } from "../../auth/auth.model.js";
+import { INewPostUseCase } from "../usecases/post/inewPostUseCase.js";
 
-export class SocialController {
+export class PostController {
     constructor(private readonly newPostUseCase: INewPostUseCase) {
 
     }

@@ -39,7 +39,6 @@ export class LocalS3Service implements IMediaStorageService {
 
         const response = await this.s3Client.send(command)
 
-        console.log(response)
     }
 
     async createBucket(bucketName: string) {

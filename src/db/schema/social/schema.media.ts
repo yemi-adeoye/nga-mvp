@@ -22,7 +22,8 @@ export const mediaPostTable = mysqlTable("post_media", {
     mediaId: int().notNull().references(() => mediaTable.id),
 },
     (table) => [
-        primaryKey({ columns: [table.postId, table.mediaId] })
+        primaryKey({ columns: [table.postId, table.mediaId] }),
+        index("idx_post_media_media").on(table.mediaId, table.postId),
     ]
 )
 

@@ -12,18 +12,32 @@ import { VerifyUseCase } from "./auth/usecases/impl/verify.usecase.js";
 import { LoginUseCase } from "./auth/usecases/impl/login.usecase.js";
 import { SessionUseCase } from "./auth/usecases/impl/session.usecase.js";
 import { DrizzleSessionRepository } from "./auth/repositories/impl/session.repository.js";
-import { SocialController } from "./social/social.controller.js";
-import { NewPostUseCase } from "./social/usecases/impl/newpost.usecase.js";
+import { PostController } from "./social/controllers/post.controller.js";
+import { NewPostUseCase } from "./social/usecases/post/impl/newpost.usecase.js";
 import { DrizzlePostRepository } from "./social/repositories/impl/post.repository.js";
 import { UnitOfWork } from "./common/impl/unitofwork.js";
 import { IMediaStorageService } from "./social/services/istorage.service.js";
 import { LocalS3Service } from "./social/services/impl/local.s3.service.js";
+import { TagController } from "./social/controllers/tag.controller.js";
+import { NewTagUseCase } from "./social/usecases/tag/impl/newtag.usecase.js";
+import { DrizzleTagRepository } from "./social/repositories/impl/tag.repository.js";
+import { FeedController } from "./social/controllers/feed.controller.js";
+import { IFeedUseCase } from "./social/usecases/feed/ifeed.usecase.js";
+import { INewTagUseCase } from "./social/usecases/tag/inew.tag.usecase.js";
+import { INewPostUseCase } from "./social/usecases/post/inewPostUseCase.js";
+import { ISessionUseCase } from "./auth/usecases/isessionUseCase.js";
+import { IVerifyUseCase } from "./auth/usecases/iverifyUseCase.js";
+import { ILoginUseCase } from "./auth/usecases/iloginUseCase.js";
+import { FeedUseCase } from "./social/usecases/feed/impl/feed.usecase.js";
+import { DrizzleFeedRepository } from "./social/repositories/impl/feed.repository.js";
 
 export const userRepository = new DrizzleUserRepository(db);
 const profileRepository = new DrizzleProfileRepository(db);
 const verificationRepository = new DrizzleVerificationTokenRepository(db);
 const sessionRepository = new DrizzleSessionRepository(db)
 const postRepository = new DrizzlePostRepository(db)
+const tagRepository = new DrizzleTagRepository(db)
+const feedRepository = new DrizzleFeedRepository(db)
 
 const passwordHasher = new PasswordHasher()
 const tokenGenerator = new CryptoTokenService()
@@ -43,15 +57,15 @@ export const createRegisterUseCase = (): RegisterUseCase => {
     )
 }
 
-export const createLoginUseCase = (): LoginUseCase => {
+export const createLoginUseCase = (): ILoginUseCase => {
     return new LoginUseCase(userRepository, passwordHasher)
 }
 
-export const createVerifyUseCase = (): VerifyUseCase => {
+export const createVerifyUseCase = (): IVerifyUseCase => {
     return new VerifyUseCase(tokenHasher, verificationRepository, unitOfWork)
 }
 
-export const createSessionUseCase = (): SessionUseCase => {
+export const createSessionUseCase = (): ISessionUseCase => {
     return new SessionUseCase(sessionRepository, tokenHasher)
 }
 
@@ -59,8 +73,16 @@ export const createMediaStorageService = (): IMediaStorageService => {
     return new LocalS3Service()
 }
 
-export const createNewPostUseCase = (): NewPostUseCase => {
-    return new NewPostUseCase(postRepository, unitOfWork, createMediaStorageService())
+export const createNewPostUseCase = (): INewPostUseCase => {
+    return new NewPostUseCase(unitOfWork, createMediaStorageService())
+}
+
+export const createNewTagUseCase = (): INewTagUseCase => {
+    return new NewTagUseCase(tagRepository)
+}
+
+export const createFeedUseCase = (): IFeedUseCase => {
+    return new FeedUseCase(feedRepository)
 }
 
 export const createAuthController = () => {
@@ -71,6 +93,14 @@ export const createAuthController = () => {
     return new AuthController(registerUseCase, verifyUseCase, loginUseCase, sessionUseCase)
 }
 
-export const createSocialController = () => {
-    return new SocialController(createNewPostUseCase());
+export const createPostController = () => {
+    return new PostController(createNewPostUseCase());
+}
+
+export const createTagController = () => {
+    return new TagController(createNewTagUseCase());
+}
+
+export const createFeedController = () => {
+    return new FeedController(createFeedUseCase());
 }

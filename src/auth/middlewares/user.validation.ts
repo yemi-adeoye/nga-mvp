@@ -31,7 +31,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         throw new LoginException('user is not authenticated!')
     }
 
-    req.user = { id: user.id, username: user.username, status: user.status }
+    req.user = { id: user.id, username: user.username, status: user.status, role: user.role }
 
     next()
 }

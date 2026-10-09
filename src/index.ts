@@ -5,8 +5,10 @@ import { BaseException } from './auth/error/base.exception.js'
 import cors from 'cors';
 import 'dotenv/config'
 import cookieParser from "cookie-parser";
-import socialRouter from './social/social.routes.js';
+import postRouter from './social/routes/post.routes.js';
 import multer from 'multer';
+import tagRouter from './social/routes/tag.routes.js';
+import feedRouter from './social/routes/feed.routes.js';
 
 
 const app: Express = express()
@@ -33,7 +35,10 @@ app.use((req, _res, next) => {
 });
 app.use(express.json())
 app.use('/auth', authRouter)
-app.use('/social', socialRouter)
+app.use('/post', postRouter)
+app.use('/tag', tagRouter)
+app.use('/feed', feedRouter)
+
 app.use(
     (
         err: unknown,

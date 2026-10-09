@@ -6,6 +6,14 @@ export class DrizzleMediaRepository implements IMediaRepository {
     constructor(
         private readonly db: Database | Transaction
     ) { }
+    async createMany(newMedia: NewMedia[]): Promise<number[]> {
+        const result = await this.db
+            .insert(mediaTable)
+            .values(newMedia)
+            .$returningId();
+
+        return result.map(row => row.id);
+    }
 
     async create(media: NewMedia): Promise<number> {
         const result = await this.db
